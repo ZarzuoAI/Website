@@ -1,2 +1,0 @@
-# Website
-AI Automation Website 
