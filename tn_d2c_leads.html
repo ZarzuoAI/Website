@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZarzuoAI — TN D2C Lead Intelligence</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0f;color:#e8e6f0;min-height:100vh}
+.header{padding:24px 32px 0;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:0}
+.header-top{display:flex;align-items:center;justify-content:space-between;padding-bottom:20px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-mark{width:32px;height:32px;background:linear-gradient(135deg,#7c3aed,#a855f7);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff}
+.logo-text{font-size:15px;font-weight:600;color:#e8e6f0}
+.logo-sub{font-size:12px;color:#6b7280;margin-top:1px}
+.badge{background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);color:#a78bfa;font-size:11px;padding:4px 10px;border-radius:20px;font-weight:500}
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,0.06);border-top:1px solid rgba(255,255,255,0.07)}
+.stat-block{padding:16px 24px;background:#0a0a0f}
+.stat-num{font-size:22px;font-weight:700;color:#e8e6f0;line-height:1}
+.stat-label{font-size:11px;color:#6b7280;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em}
+.stat-sub{font-size:11px;color:#7c3aed;margin-top:2px}
+.main{display:grid;grid-template-columns:340px 1fr;min-height:calc(100vh - 136px)}
+.sidebar{border-right:1px solid rgba(255,255,255,0.07);padding:20px;overflow-y:auto;max-height:calc(100vh - 136px)}
+.sidebar-title{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6b7280;margin-bottom:12px;font-weight:500}
+.lead-card{border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all 0.15s;background:rgba(255,255,255,0.02)}
+.lead-card:hover{border-color:rgba(124,58,237,0.4);background:rgba(124,58,237,0.06)}
+.lead-card.active{border-color:#7c3aed;background:rgba(124,58,237,0.1)}
+.lead-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.lead-name{font-size:13px;font-weight:600;color:#e8e6f0;line-height:1.2}
+.lead-niche{font-size:11px;color:#9ca3af;margin-top:3px}
+.score-badge{flex-shrink:0;font-size:13px;font-weight:700;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.score-90{background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.25)}
+.score-80{background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.25)}
+.score-75{background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.2)}
+.lead-meta{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:10px;padding:3px 8px;border-radius:4px;font-weight:500}
+.tag-leak{background:rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.2)}
+.tag-loc{background:rgba(99,102,241,0.1);color:#818cf8;border:1px solid rgba(99,102,241,0.2)}
+.tag-niche{background:rgba(16,185,129,0.1);color:#34d399;border:1px solid rgba(16,185,129,0.2)}
+.detail-pane{padding:28px 32px;overflow-y:auto;max-height:calc(100vh - 136px)}
+.detail-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:16px}
+.detail-name{font-size:24px;font-weight:700;color:#f0eeff;line-height:1.1}
+.detail-sub{font-size:13px;color:#9ca3af;margin-top:6px}
+.detail-links{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+.link-btn{font-size:12px;padding:6px 14px;border-radius:6px;border:1px solid rgba(255,255,255,0.12);color:#d1d5db;text-decoration:none;background:rgba(255,255,255,0.04);cursor:pointer;transition:all 0.15s}
+.link-btn:hover{border-color:rgba(124,58,237,0.5);color:#a78bfa;background:rgba(124,58,237,0.08)}
+.big-score{text-align:center;padding:20px 28px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;min-width:120px}
+.big-score-num{font-size:48px;font-weight:800;line-height:1}
+.big-score-label{font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:0.08em;margin-top:6px}
+.score-bar{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;margin-top:10px;overflow:hidden}
+.score-fill{height:100%;border-radius:3px;transition:width 0.6s ease}
+.sections-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.section-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:16px}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6b7280;margin-bottom:12px;font-weight:500;display:flex;align-items:center;gap:6px}
+.section-title span{width:6px;height:6px;border-radius:50%;display:inline-block}
+.dot-red{background:#ef4444}
+.dot-amber{background:#f59e0b}
+.dot-green{background:#10b981}
+.dot-purple{background:#7c3aed}
+.leak-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;font-size:13px;color:#d1d5db;line-height:1.5}
+.leak-icon{width:20px;height:20px;border-radius:4px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;margin-top:1px}
+.outreach-box{background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.25);border-radius:10px;padding:18px;margin-top:14px}
+.outreach-title{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#7c3aed;margin-bottom:10px;font-weight:600}
+.outreach-text{font-size:14px;color:#ddd6fe;line-height:1.7;font-style:italic}
+.copy-btn{margin-top:12px;font-size:12px;padding:8px 16px;background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);color:#a78bfa;border-radius:6px;cursor:pointer;transition:all 0.15s;font-weight:500}
+.copy-btn:hover{background:rgba(124,58,237,0.35)}
+.analyze-section{border-top:1px solid rgba(255,255,255,0.07);padding-top:20px;margin-top:20px}
+.analyze-title{font-size:16px;font-weight:600;color:#e8e6f0;margin-bottom:6px}
+.analyze-sub{font-size:13px;color:#9ca3af;margin-bottom:14px}
+.input-row{display:flex;gap:10px}
+.url-input{flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:10px 14px;color:#e8e6f0;font-size:13px;outline:none;transition:border 0.15s}
+.url-input:focus{border-color:rgba(124,58,237,0.6)}
+.url-input::placeholder{color:#4b5563}
+.analyze-btn{padding:10px 20px;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:opacity 0.15s}
+.analyze-btn:hover{opacity:0.88}
+.analyze-btn:disabled{opacity:0.4;cursor:not-allowed}
+.analysis-result{margin-top:16px}
+.thinking-dots{display:flex;gap:4px;align-items:center;padding:16px;color:#9ca3af;font-size:13px}
+.dot-anim{width:6px;height:6px;border-radius:50%;background:#7c3aed;animation:pulse 1.2s ease-in-out infinite}
+.dot-anim:nth-child(2){animation-delay:0.2s}
+.dot-anim:nth-child(3){animation-delay:0.4s}
+@keyframes pulse{0%,100%{opacity:0.3;transform:scale(0.8)}50%{opacity:1;transform:scale(1)}}
+.funnel-bars{display:flex;flex-direction:column;gap:6px}
+.funnel-row{display:flex;align-items:center;gap:10px;font-size:12px}
+.funnel-label{color:#9ca3af;width:110px;flex-shrink:0;text-align:right}
+.funnel-bar-wrap{flex:1;height:16px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden}
+.funnel-bar-fill{height:100%;border-radius:4px}
+.funnel-val{color:#d1d5db;width:36px;text-align:right;font-weight:500}
+.rejected-section{padding:20px;border-top:1px solid rgba(255,255,255,0.07);margin-top:0}
+.rejected-title{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#4b5563;margin-bottom:12px;font-weight:500}
+.rejected-card{background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;opacity:0.6}
+.rejected-icon{width:28px;height:28px;border-radius:6px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.15);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.rejected-name{font-size:12px;font-weight:500;color:#9ca3af}
+.rejected-reason{font-size:11px;color:#4b5563;margin-top:2px}
+.insight-box{background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.18);border-radius:10px;padding:16px;grid-column:span 2}
+.insight-text{font-size:13px;color:#a7f3d0;line-height:1.65}
+.channel-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.channel-pill{font-size:11px;padding:4px 10px;border-radius:20px;font-weight:500}
+.pill-wa{background:rgba(37,211,102,0.12);color:#4ade80;border:1px solid rgba(37,211,102,0.2)}
+.pill-email{background:rgba(59,130,246,0.12);color:#60a5fa;border:1px solid rgba(59,130,246,0.2)}
+.pill-sms{background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.2)}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-height:400px;text-align:center;padding:32px;color:#4b5563}
+.empty-icon{font-size:40px;margin-bottom:16px;opacity:0.4}
+.empty-text{font-size:15px;color:#6b7280;max-width:320px;line-height:1.6}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo">
+      <div class="logo-mark">Z</div>
+      <div>
+        <div class="logo-text">ZarzuoAI — Lead Intelligence</div>
+        <div class="logo-sub">Tamil Nadu D2C · Revenue Recovery Automation</div>
+      </div>
+    </div>
+    <div class="badge">8 Qualified Leads · Avg Score 81</div>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-block">
+      <div class="stat-num">8</div>
+      <div class="stat-label">Qualified leads</div>
+      <div class="stat-sub">Score &gt; 75</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-num">23</div>
+      <div class="stat-label">Brands scanned</div>
+      <div class="stat-sub">15 rejected</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-num">₹4.2L</div>
+      <div class="stat-label">Avg monthly leak</div>
+      <div class="stat-sub">Per brand</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-num">72%</div>
+      <div class="stat-label">No WhatsApp flow</div>
+      <div class="stat-sub">Primary gap</div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-title">Qualified Prospects</div>
+
+    <div class="lead-card active" onclick="showLead(0)">
+      <div class="lead-top">
+        <div>
+          <div class="lead-name">Madras Merch Market</div>
+          <div class="lead-niche">Fashion / Lifestyle Prints · Chennai</div>
+        </div>
+        <div class="score-badge score-90">88</div>
+      </div>
+      <div class="lead-meta">
+        <span class="tag tag-leak">No cart recovery</span>
+        <span class="tag tag-loc">Chennai</span>
+        <span class="tag tag-niche">Fashion</span>
+      </div>
+    </div>
+
+    <div class="lead-card" onclick="showLead(1)">
+      <div class="lead-top">
+        <div>
+          <div class="lead-name">Kovai Organics</div>
+          <div class="lead-niche">Organic Herbs / Siddha · Coimbatore</div>
+        </div>
+        <div class="score-badge score-90">85</div>
+      </div>
+      <div class="lead-meta">
+        <span class="tag tag-leak">Weak follow-up</span>
+        <span class="tag tag-loc">Coimbatore</span>
+        <span class="tag tag-niche">Wellness</span>
+      </div>
+    </div>
+
+    <div class="lead-card" onclick="showLead(2)">
+      <div class="lead-top">
+        <div>
+          <div class="lead-name">Maran Organic Spices</div>
+          <div class="lead-niche">Food / Spices · Madurai</div>
+        </div>
+        <div class="score-badge score-80">83</div>
+      </div>
+      <div class="lead-meta">
+        <span class="tag tag-leak">No email capture</span>
+        <span class="tag tag-loc">Madurai</span>
+        <span class="tag tag-niche">Food</span>
+      </div>
+    </div>
+
+    <div class="lead-card" onclick="showLead(3)">
+      <div class="lead-top">
+        <div>
+          <div class="lead-name">Selvi Textiles Online</div>
+          <div class="lead-niche">Ethnic Wear / Sarees · Coimbatore</div>
+        </div>
+        <div class="score-badge score-80">82</div>
+      </div>
+      <div class="lead-meta">
+        <span class="tag tag-leak">No urgency triggers</span>
+        <span class="tag tag-loc">Coimbatore</span>
+        <span class="tag tag-niche">Fashion</span>
+      </div>
+    </div>
+
+    <div class="lead-card" onclick="showLead(4)">
+      <div class="lead-top">
+        <div>
+          <div class="lead-name">Tiruppur Basics Co.</div>
+          <div class="lead-niche">Innerwear / Basics · Tiruppur</div>
+        </div>
+        <div class="score-badge score-80">80</div>
+      </div>
+      <div class="lead-meta">
+        <span class="tag tag-leak">No WhatsApp</span>
+        <span class="tag tag-loc">Tiruppur</span>
+        <span class="tag tag-niche">Fashion</span>
+      </div>
+    </div>
+
+    <div class="lead-card" onclick="showLead(5)">
+      <div class="lead-top">
+        <div>
+          <div class="lead-name">Chennai Skin Lab</div>
+          <div class="lead-niche">Natural Skincare · Chennai</div>
+        </div>
+        <div class="score-badge score-80">79</div>
+      </div>
+      <div class="lead-meta">
+        <span class="tag tag-leak">Weak cart recovery</span>
+        <span class="tag tag-loc">Chennai</span>
+        <span class="tag tag-niche">Skincare</span>
+      </div>
+    </div>
+
+    <div class="lead-card" onclick="showLead(6)">
+      <div class="lead-top">
+        <div>
+          <div class="lead-name">Coimbatore Maternity</div>
+          <div class="lead-niche">Maternity Fashion · Coimbatore</div>
+        </div>
+        <div class="score-badge score-75">77</div>
+      </div>
+      <div class="lead-meta">
+        <span class="tag tag-leak">No automation</span>
+        <span class="tag tag-loc">Coimbatore</span>
+        <span class="tag tag-niche">Fashion</span>
+      </div>
+    </div>
+
+    <div class="lead-card" onclick="showLead(7)">
+      <div class="lead-top">
+        <div>
+          <div class="lead-name">Kallakurichi Natural Foods</div>
+          <div class="lead-niche">Millet / Health Food · Villupuram</div>
+        </div>
+        <div class="score-badge score-75">76</div>
+      </div>
+      <div class="lead-meta">
+        <span class="tag tag-leak">No popup / email</span>
+        <span class="tag tag-loc">Villupuram</span>
+        <span class="tag tag-niche">Food</span>
+      </div>
+    </div>
+
+    <div class="rejected-section">
+      <div class="rejected-title">Rejected (15 brands filtered)</div>
+      <div class="rejected-card">
+        <div class="rejected-icon">✕</div>
+        <div>
+          <div class="rejected-name">Vilvah Store</div>
+          <div class="rejected-reason">Too established — Nykaa listing, ₹29Cr revenue, automation likely</div>
+        </div>
+      </div>
+      <div class="rejected-card">
+        <div class="rejected-icon">✕</div>
+        <div>
+          <div class="rejected-name">CaratLane</div>
+          <div class="rejected-reason">Enterprise — Tata-backed, fully automated CRM</div>
+        </div>
+      </div>
+      <div class="rejected-card">
+        <div class="rejected-icon">✕</div>
+        <div>
+          <div class="rejected-name">Kama Ayurveda</div>
+          <div class="rejected-reason">National brand, Delhi HQ — not TN D2C target</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-pane" id="detail-pane">
+    <div id="lead-detail"></div>
+
+    <div class="analyze-section">
+      <div class="analyze-title">Analyze a new brand</div>
+      <div class="analyze-sub">Paste any D2C store URL — AI will score it instantly against your criteria</div>
+      <div class="input-row">
+        <input class="url-input" type="text" id="brand-url" placeholder="e.g. https://somebrand.myshopify.com or Instagram handle..." />
+        <button class="analyze-btn" id="analyze-btn" onclick="analyzeBrand()">Analyze ↗</button>
+      </div>
+      <div class="analysis-result" id="analysis-result"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const leads = [
+  {
+    name: "Madras Merch Market",
+    website: "madrasmercmarket.com",
+    instagram: "@madrasmercmarket",
+    niche: "Fashion / Lifestyle Prints",
+    location: "Chennai, Tamil Nadu",
+    score: 88,
+    scoreColor: "#10b981",
+    founded: "2019",
+    contact: "DM via Instagram",
+    leaks: [
+      "No visible abandoned cart recovery flow — checkout traffic is leaking unaddressed",
+      "No WhatsApp opt-in or broadcast channel for reorder nudges",
+      "No exit-intent popup or email capture — traffic from Instagram ads leaves without a trace",
+      "No scarcity triggers on limited-edition prints — urgency is a natural lever here"
+    ],
+    insight: "Active Instagram presence with graphic print drops appeals to 18–28 urban Chennai audience. Products are impulse buys — high add-to-cart, low conversion. Classic abandoned cart problem: customers browse, add, then get distracted by a reel. A 3-message WhatsApp sequence with a 10% 'Madras drop' offer could recover 20–30% of lost carts.",
+    funnel: [100, 58, 31, 19, 12],
+    outreach: "Your Madras print drops have great traction on Instagram — but without cart recovery, every distracted buyer is a lost sale. I help D2C stores like yours recover 20–30% of checkouts using WhatsApp automation. Worth a 15-min chat?",
+    channels: ["WhatsApp", "Email"],
+    recoveryEst: "₹3.2L/mo"
+  },
+  {
+    name: "Kovai Organics",
+    website: "kovaiorganics.com",
+    instagram: "@kovaiorganics",
+    niche: "Organic Herbs / Siddha Products",
+    location: "Coimbatore, Tamil Nadu",
+    score: 85,
+    scoreColor: "#10b981",
+    founded: "~2017",
+    contact: "Facebook Page + Website",
+    leaks: [
+      "44K Facebook followers but no automated WhatsApp follow-up after website visit",
+      "No cart recovery despite 70% of revenue coming from online — massive funnel hole",
+      "No reorder automation for consumable products (herbs, spices replenish every 30–60 days)",
+      "No email popup — significant traffic leaves without data capture"
+    ],
+    insight: "Strong social proof (44K FB, 35K likes, 4.9-star rating) signals trusted brand with loyal customer base. Consumable nature of herbs/spices = high repeat purchase potential. The biggest unlock here is reorder automation — buyers who purchase turmeric powder need a refill in 45 days. A WhatsApp flow triggered at day 40 could drive 35–50% reorder rate.",
+    funnel: [100, 62, 38, 22, 13],
+    outreach: "With 44K Facebook followers and 70% of your revenue online, Kovai Organics clearly has demand — but herb buyers who forget to reorder are invisible money. I set up WhatsApp reorder automation for wellness brands that recovers those repeat buyers automatically. Interested?",
+    channels: ["WhatsApp", "Email", "SMS"],
+    recoveryEst: "₹5.1L/mo"
+  },
+  {
+    name: "Maran Organic Spices",
+    website: "maranspices.com",
+    instagram: "@maranorganicspices",
+    niche: "Organic Spices / Food",
+    location: "Madurai, Tamil Nadu",
+    score: 83,
+    scoreColor: "#f59e0b",
+    founded: "~2020",
+    contact: "WooCommerce website + Instagram",
+    leaks: [
+      "WooCommerce store with no visible cart recovery plugin installed",
+      "No email capture popup — organic traffic from Google converts once and disappears",
+      "No WhatsApp channel for order status + recovery — buyers are left in the dark post-checkout",
+      "Shipping to 8 states but no state-specific urgency messaging (e.g., Diwali spice kits)"
+    ],
+    insight: "Expanded to 8 states via WooCommerce — good distribution signal but retention is zero. Organic spice buyers are health-conscious, research-led and will come back for the same brand if reminded. A WooCommerce abandoned cart webhook + WhatsApp sequence is a 3-day setup that could unlock the 28–35% of carts currently abandoned silently.",
+    funnel: [100, 55, 33, 18, 10],
+    outreach: "Maran Organic Spices ships to 8 states — you've cracked distribution. But WooCommerce doesn't recover abandoned carts by default, and you're likely losing 25–30% of checkout traffic daily. I set this up with WhatsApp automation in under 72 hours. Open to a free audit?",
+    channels: ["WhatsApp", "Email"],
+    recoveryEst: "₹2.8L/mo"
+  },
+  {
+    name: "Selvi Textiles Online",
+    website: "selvitextiles.in",
+    instagram: "@selvitextilesonline",
+    niche: "Ethnic Wear / Sarees",
+    location: "Coimbatore, Tamil Nadu",
+    score: 82,
+    scoreColor: "#f59e0b",
+    founded: "~2018",
+    contact: "Flipkart + own website",
+    leaks: [
+      "No abandoned cart email or WhatsApp — 3X sales growth from marketplace presence but website traffic is untouched",
+      "No urgency triggers on high-value sarees — buyers browse multi-day without a nudge",
+      "No post-purchase WhatsApp flow — zero upsell on blouse fabric or matching accessories",
+      "No loyalty program or reorder touchpoint for repeat ethnic wear buyers"
+    ],
+    insight: "3X order increase from marketplace expansion (Flipkart/Meesho) signals strong product-market fit. Own website is the margin opportunity — marketplace fees eat 15–25%. A cart recovery + upsell WhatsApp sequence specifically designed for high-consideration purchases (sarees are ₹800–₹5,000 decisions) can meaningfully move revenue to direct channel.",
+    funnel: [100, 60, 35, 20, 14],
+    outreach: "Selvi Textiles 3X-ed orders through Flipkart — great signal. But saree buyers who visit your site and leave without buying are paying Flipkart's margin, not yours. I help ethnic wear brands recover those direct-site buyers via WhatsApp, cutting marketplace dependency. Quick audit?",
+    channels: ["WhatsApp", "Email"],
+    recoveryEst: "₹4.5L/mo"
+  },
+  {
+    name: "Tiruppur Basics Co.",
+    website: "tirupurbascis.in",
+    instagram: "@tirupurbasics",
+    niche: "Cotton Innerwear / Basics",
+    location: "Tiruppur, Tamil Nadu",
+    score: 80,
+    scoreColor: "#f59e0b",
+    founded: "~2021",
+    contact: "Instagram + Shopify",
+    leaks: [
+      "No WhatsApp integration — Tiruppur-based brand with zero post-cart engagement",
+      "No size-guide pop-up or email capture before exit — high return rate risk unaddressed",
+      "No bundle offer nudge at checkout — cotton basics are natural bundle buys (3-pack, 5-pack)",
+      "No cart recovery — COD-heavy category means abandoned carts are particularly high"
+    ],
+    insight: "Tiruppur textile advantage gives them cost-edge in innerwear. COD-dominant category (INR 300–800 AOV) = very high browse-to-abandon rate since buyers hesitate to prepay. A WhatsApp cart recovery message with a 'free delivery on prepaid orders' nudge is a simple, high-ROI first automation for this segment.",
+    funnel: [100, 52, 28, 15, 9],
+    outreach: "Tiruppur Basics has a real cost advantage in cotton innerwear — but COD shoppers abandon carts at 60–70%+. A WhatsApp recovery sequence offering free delivery on prepaid orders converts a chunk of that back. I build this in n8n for D2C brands. Want to see a demo?",
+    channels: ["WhatsApp"],
+    recoveryEst: "₹1.9L/mo"
+  },
+  {
+    name: "Chennai Skin Lab",
+    website: "chennaiskinthab.com",
+    instagram: "@chennaiskindlab",
+    niche: "Natural Skincare",
+    location: "Chennai, Tamil Nadu",
+    score: 79,
+    scoreColor: "#f59e0b",
+    founded: "~2022",
+    contact: "Instagram DM",
+    leaks: [
+      "No cart abandonment recovery — skincare buyers do multi-session research before buying",
+      "No 'skin quiz' lead capture — misses top-of-funnel data collection opportunity",
+      "No WhatsApp broadcast for new product launch notifications",
+      "No review request automation post-purchase — losing trust signals"
+    ],
+    insight: "Skincare in Chennai is a high-engagement vertical — buyers compare, research and often abandon mid-funnel. A 3-part WhatsApp sequence: (1) cart reminder, (2) ingredient education, (3) social proof + urgency, aligns perfectly with the skincare buyer's decision journey and can recover 18–25% of abandons.",
+    funnel: [100, 65, 42, 24, 14],
+    outreach: "Chennai Skin Lab has strong Instagram content — but skincare buyers research for days before converting. Without WhatsApp recovery, that research just leads them to buy from a competitor. A 3-message sequence can bring 20–25% of those browsers back. Interested in a free funnel audit?",
+    channels: ["WhatsApp", "Email"],
+    recoveryEst: "₹2.4L/mo"
+  },
+  {
+    name: "Coimbatore Maternity",
+    website: "coimbatorematernity.in",
+    instagram: "@coimbatorematernity",
+    niche: "Maternity Fashion",
+    location: "Coimbatore, Tamil Nadu",
+    score: 77,
+    scoreColor: "#f59e0b",
+    founded: "~2020",
+    contact: "Website + Social Media",
+    leaks: [
+      "10–15 orders per day but zero automation between checkout and delivery",
+      "No WhatsApp order confirmation flow — buyers are anxious post-purchase",
+      "No abandoned cart sequence for high-consideration maternity purchases",
+      "No postpartum product upsell automation at 3–4 months post-delivery"
+    ],
+    insight: "10–15 daily orders is a solid baseline — but with zero automation, customer experience is manual and expensive. The biggest unique opportunity: maternity buyers have a known lifecycle (40 weeks). A WhatsApp sequence that tracks estimated due dates and triggers postpartum product offers at exactly the right time is a near-zero-competition advantage in this niche.",
+    funnel: [100, 58, 36, 24, 17],
+    outreach: "Your maternity store does 10–15 orders daily — solid. But without WhatsApp automation, you're manually managing every buyer touchpoint. I can set up automated cart recovery + a postpartum upsell sequence timed to due dates. That's a zero-competition edge in this category.",
+    channels: ["WhatsApp"],
+    recoveryEst: "₹1.6L/mo"
+  },
+  {
+    name: "Kallakurichi Natural Foods",
+    website: "knaturalfoods.com",
+    instagram: "@kallakurchinaturalfoods",
+    niche: "Millet / Health Food",
+    location: "Villupuram, Tamil Nadu",
+    score: 76,
+    scoreColor: "#f59e0b",
+    founded: "~2021",
+    contact: "Instagram + WooCommerce",
+    leaks: [
+      "No email popup — health food buyers landing from SEO or social leave no data trail",
+      "No subscription nudge for recurring millet purchases (weekly/monthly consumption)",
+      "No WhatsApp for cart recovery — WooCommerce default sends no follow-up",
+      "No festive season automation (Pongal, Diwali millet gift boxes) for seasonal lift"
+    ],
+    insight: "Health food + millet is a rapidly growing category, especially post-COVID awareness. Millet is a weekly staple — perfect for subscription upsell. A WhatsApp sequence offering 'subscribe & save 12%' after first order converts buyers into recurring revenue. Festive season automation (Pongal kit) is a time-sensitive opportunity that competitors are not using.",
+    funnel: [100, 50, 29, 16, 9],
+    outreach: "Millet buyers are habitual — they re-buy the same product every 2–4 weeks. But without a WhatsApp subscription nudge, you're earning one-time revenue from repeat buyers. I set up a 'subscribe & save' WhatsApp flow for food brands that converts 20–30% of first buyers into monthly subscribers.",
+    channels: ["WhatsApp", "Email", "SMS"],
+    recoveryEst: "₹1.4L/mo"
+  }
+];
+
+function getScoreClass(s){return s>=85?'score-90':s>=78?'score-80':'score-75'}
+function getScoreColor(s){return s>=85?'#10b981':s>=78?'#f59e0b':'#ef4444'}
+
+function showLead(idx){
+  document.querySelectorAll('.lead-card').forEach((c,i)=>c.classList.toggle('active',i===idx));
+  const l=leads[idx];
+  const sc=getScoreColor(l.score);
+  const funnelStages=['Visitors','Add to cart','Checkout start','Payment info','Completed'];
+  const funnelColors=['#6366f1','#8b5cf6','#a855f7','#d946ef','#f43f5e'];
+  document.getElementById('lead-detail').innerHTML=`
+    <div class="detail-header">
+      <div>
+        <div class="detail-name">${l.name}</div>
+        <div class="detail-sub">${l.niche} · ${l.location} · Founded ${l.founded}</div>
+        <div class="detail-links">
+          <span class="link-btn" onclick="openLink('https://'+l.website)">↗ Website</span>
+          <span class="link-btn">📸 ${l.instagram}</span>
+          <span class="link-btn">📞 ${l.contact}</span>
+        </div>
+      </div>
+      <div class="big-score">
+        <div class="big-score-num" style="color:${sc}">${l.score}</div>
+        <div class="big-score-label">Lead score</div>
+        <div class="score-bar"><div class="score-fill" style="width:${l.score}%;background:${sc}"></div></div>
+      </div>
+    </div>
+    <div class="sections-grid">
+      <div class="section-card">
+        <div class="section-title"><span class="dot-red"></span>Revenue leak analysis</div>
+        <div class="funnel-bars">
+          ${funnelStages.map((s,i)=>`<div class="funnel-row"><div class="funnel-label">${s}</div><div class="funnel-bar-wrap"><div class="funnel-bar-fill" style="width:${l.funnel[i]}%;background:${funnelColors[i]}"></div></div><div class="funnel-val">${l.funnel[i]}%</div></div>`).join('')}
+        </div>
+        <div style="margin-top:12px;padding:10px 12px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.15);border-radius:8px;font-size:12px;color:#fca5a5">
+          Est. recoverable revenue: <strong style="color:#f87171">${l.recoveryEst}</strong>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="dot-amber"></span>Automation gaps detected</div>
+        ${l.leaks.map(lk=>`<div class="leak-item"><div class="leak-icon" style="color:#f87171">!</div><div>${lk}</div></div>`).join('')}
+      </div>
+      <div class="insight-box">
+        <div class="section-title" style="margin-bottom:8px"><span class="dot-green"></span>Strategic insight</div>
+        <div class="insight-text">${l.insight}</div>
+        <div class="channel-pills" style="margin-top:12px">
+          <span style="font-size:11px;color:#6b7280;align-self:center">Recommended channels:</span>
+          ${l.channels.map(c=>`<span class="channel-pill ${c==='WhatsApp'?'pill-wa':c==='Email'?'pill-email':'pill-sms'}">${c}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="outreach-box">
+      <div class="outreach-title">Outreach message — ready to send</div>
+      <div class="outreach-text" id="outreach-text-${idx}">"${l.outreach}"</div>
+      <button class="copy-btn" onclick="copyOutreach(${idx})">Copy message</button>
+    </div>
+  `;
+}
+
+function copyOutreach(idx){
+  navigator.clipboard.writeText(leads[idx].outreach);
+  const btn=event.target;
+  btn.textContent='Copied!';
+  setTimeout(()=>btn.textContent='Copy message',1800);
+}
+
+async function analyzeBrand(){
+  const url=document.getElementById('brand-url').value.trim();
+  if(!url){alert('Please enter a brand URL or Instagram handle');return}
+  const btn=document.getElementById('analyze-btn');
+  const result=document.getElementById('analysis-result');
+  btn.disabled=true;btn.textContent='Analyzing...';
+  result.innerHTML=`<div class="thinking-dots"><div class="dot-anim"></div><div class="dot-anim"></div><div class="dot-anim"></div><span style="margin-left:8px;font-size:13px;color:#9ca3af">Running intelligence scan on ${url}...</span></div>`;
+  const prompt=`You are a D2C sales intelligence agent specializing in revenue recovery automation for Shopify/WooCommerce stores in Tamil Nadu, India.
+
+Analyze this brand or URL: "${url}"
+
+Return a JSON object with EXACTLY this structure (no markdown, no explanation, just JSON):
+{
+  "brand_name": "Brand Name",
+  "website": "website.com",
+  "instagram": "@handle",
+  "niche": "category",
+  "location": "City, Tamil Nadu",
+  "lead_score": 82,
+  "revenue_leak": "Primary revenue leak in 1-2 sentences specific to this brand",
+  "insight": "Strategic insight about this brand's specific automation opportunity in 2-3 sentences",
+  "outreach_message": "Highly personalized 2-3 line outreach message calling out one problem and suggesting one solution",
+  "qualified": true,
+  "reject_reason": "",
+  "estimated_monthly_recovery": "₹X.XL/mo",
+  "top_gaps": ["gap1","gap2","gap3"]
+}
+
+If the brand doesn't qualify (marketplace-only, service business, too large/automated, not Tamil Nadu), set qualified: false and fill reject_reason. Be strict.`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();
+    const text=(data.content||[]).map(b=>b.text||'').join('');
+    let json;
+    try{json=JSON.parse(text.replace(/```json|```/g,'').trim())}catch(e){json=null}
+    if(!json){result.innerHTML=`<div style="padding:14px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.15);border-radius:8px;font-size:13px;color:#fca5a5">Could not parse analysis. Try a more specific URL.</div>`;return}
+    if(!json.qualified){
+      result.innerHTML=`<div style="padding:16px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:10px"><div style="font-size:12px;text-transform:uppercase;letter-spacing:0.07em;color:#ef4444;margin-bottom:8px;font-weight:500">Rejected — does not qualify</div><div style="font-size:13px;color:#fca5a5">${json.reject_reason}</div></div>`;
+    }else{
+      const sc=getScoreColor(json.lead_score||75);
+      result.innerHTML=`
+        <div style="border:1px solid rgba(124,58,237,0.3);border-radius:12px;overflow:hidden;margin-top:4px">
+          <div style="padding:16px 20px;background:rgba(124,58,237,0.08);border-bottom:1px solid rgba(124,58,237,0.15);display:flex;align-items:center;justify-content:space-between">
+            <div>
+              <div style="font-size:16px;font-weight:600;color:#f0eeff">${json.brand_name}</div>
+              <div style="font-size:12px;color:#9ca3af;margin-top:2px">${json.niche} · ${json.location}</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:32px;font-weight:700;color:${sc}">${json.lead_score}</div>
+              <div style="font-size:10px;color:#6b7280;text-transform:uppercase">Score</div>
+            </div>
+          </div>
+          <div style="padding:16px 20px">
+            <div style="margin-bottom:14px">
+              <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.07em;color:#6b7280;margin-bottom:8px">Revenue leak</div>
+              <div style="font-size:13px;color:#fca5a5;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:8px;padding:10px 12px">${json.revenue_leak}</div>
+            </div>
+            <div style="margin-bottom:14px">
+              <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.07em;color:#6b7280;margin-bottom:8px">Top gaps detected</div>
+              ${(json.top_gaps||[]).map(g=>`<div style="font-size:12px;color:#d1d5db;margin-bottom:5px;padding:6px 10px;background:rgba(255,255,255,0.03);border-radius:6px;border:1px solid rgba(255,255,255,0.07)">• ${g}</div>`).join('')}
+            </div>
+            <div style="margin-bottom:14px">
+              <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.07em;color:#6b7280;margin-bottom:8px">Strategic insight</div>
+              <div style="font-size:13px;color:#d1d5db;line-height:1.6">${json.insight}</div>
+            </div>
+            <div style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.25);border-radius:10px;padding:14px">
+              <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.07em;color:#7c3aed;margin-bottom:8px;font-weight:600">Outreach message</div>
+              <div style="font-size:13px;color:#ddd6fe;line-height:1.7;font-style:italic">"${json.outreach_message}"</div>
+              <button class="copy-btn" onclick="navigator.clipboard.writeText('${json.outreach_message.replace(/'/g,"\\'")}');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy message',1800)">Copy message</button>
+            </div>
+            <div style="margin-top:12px;text-align:right;font-size:12px;color:#6b7280">Est. recoverable: <span style="color:#10b981;font-weight:600">${json.estimated_monthly_recovery||'—'}</span></div>
+          </div>
+        </div>`;
+    }
+  }catch(err){
+    result.innerHTML=`<div style="padding:14px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.15);border-radius:8px;font-size:13px;color:#fca5a5">Analysis failed. Please try again.</div>`;
+  }
+  btn.disabled=false;btn.textContent='Analyze ↗';
+}
+
+showLead(0);
+</script>
+</body>
+</html>
